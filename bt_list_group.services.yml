@@ -1,0 +1,4 @@
+services:
+  bt_list_group.initial:
+    class: Drupal\bt_list_group\Service\InitialSettingsService
+    arguments: []
