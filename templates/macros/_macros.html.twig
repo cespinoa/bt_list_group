@@ -1,0 +1,26 @@
+{# templates/macros/_macros.html.twig #}
+
+{% macro render_list(rows, list_cols) %}
+    <div class="{{ list_cols }} panel-list">
+      <div class="list-group t clearfix" id="list-tab" role="tablist">
+        
+        {% for row in rows %}
+          <a class="list-group-item list-group-item-action {% if loop.first %} active {% endif %}" id="list-{{ loop.index }}" data-bs-toggle="list" href="#panel-{{ loop.index }}" role="tab" aria-controls="list-home">{{ row.item_list }}</a>
+        {% endfor %}
+        
+      </div>
+    </div>
+{% endmacro %}
+
+
+{% macro render_panel(rows, panel_cols) %}
+    <div class="{{ panel_cols }} panel-content">
+      <div class="tab-content clearfix" id="nav-tabContent">
+        
+        {% for row in rows %}
+          <div class="tab-pane fade{% if loop.first %} show active {% endif %}" id="panel-{{ loop.index }}" role="tabpanel" aria-labelledby="list-profile-list">{{ row.selected_panel }}</div>
+        {% endfor %}
+
+      </div>
+    </div>
+{% endmacro %}

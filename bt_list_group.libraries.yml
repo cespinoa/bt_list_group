@@ -1,0 +1,11 @@
+images_list:
+  css:
+    theme:
+      css/bt-list-group.css: {}
+
+
+bt_list_group:
+  js:
+    js/bt-list-group.js: {}
+  dependencies:
+    - core/drupal

@@ -8,16 +8,15 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Field\FormatterInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
+
+
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Template\Attribute;
 
 
-use Drupal\views\Plugin\views\style\StylePluginBase; // Mover luego con las views
+use Drupal\views\Plugin\views\style\StylePluginBase; 
 
 use Drupal\views\ViewExecutable;
 use Drupal\Component\Utility\NestedArray;
@@ -26,213 +25,44 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 
 
-
-
-/**
- * Implements hook_field_formatter_third_party_settings_form().
- */
-function bt_list_group_field_formatter_third_party_settings_form(FormatterInterface $plugin, FieldDefinitionInterface $field_definition, $view_mode, $form, FormStateInterface $form_state) {
-  $element = [];
-
-
-  
-
-  /* @var \Drupal\bt_list_group\Service\InitialSettingsService $initialSettings */
-  $initialSettings = \Drupal::service('bt_list_group.initial');
-  
-  if (in_array($plugin->getPluginId(), $initialSettings->getFormatters())) {
-    
-    $settings = $plugin->getThirdPartySetting('bt_list_group','settings');
-    
-
-    $element['settings'] = [
-      '#type' => 'details',
-      '#title' => 'Bootstrap Toolbox List Group Nuevo',
-    ];
-    
-    $element['settings']['list_group'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Display as a bootstrap list group'),
-      '#default_value' => $settings['list_group'],
-    ];
-    
-    $element['settings']['display_as_a_card'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Display as a bootstrap card'),
-      '#default_value' => $settings['display_as_a_card'],
-      '#states' => [
-        'visible' => [
-          ':input[name="fields[' . $field_definition->getName() . '][settings_edit_form][third_party_settings][bt_list_group][list_group]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-    
-    $element['settings']['use_label_as_card_header'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Display label as card_header'),
-      '#default_value' => $settings['use_label_as_card_header'],
-      '#states' => [
-        'visible' => [
-          ':input[name="fields[' . $field_definition->getName() . '][settings_edit_form][third_party_settings][bt_list_group][display_as_a_card]"]' => ['checked' => TRUE],
-        ],
-      ],
-    ];
-    
-  }
-    
-  return $element;
-}
-
-
-/**
- * Implements hook_field_formatter_settings_summary_alter().
- */
-function bt_list_group_field_formatter_settings_summary_alter(&$summary, $context) {
-  /* @var \Drupal\bt_list_group\Service\InitialSettingsService $initialSettings */
-  $initialSettings = \Drupal::service('bt_list_group.initial');
-  if(in_array($context['formatter']->getPluginId(), $initialSettings->getFormatters())) {
-    if($context['formatter']->getThirdPartySetting('bt_list_group', 'settings')) {
-      $settings = $context['formatter']->getThirdPartySetting('bt_list_group', 'settings');
-      if($settings['list_group']){
-        $summary[] = t('Display as a bootstrap list group');
-        if($settings['display_as_a_card']){
-          $summary[] = t('Display as a bootstrap card');
-          if($settings['use_label_as_card_header']){
-            $summary[] = t('Use label as card header');
-          }
-        }
-      }
-    } 
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK() for field templates.
- */
-function bt_list_group_preprocess_field(&$variables){
-  if(array_key_exists('#third_party_settings', $variables['element']) 
-        && array_key_exists('bt_list_group',$variables['element']['#third_party_settings'])
-        && array_key_exists('settings',$variables['element']['#third_party_settings']['bt_list_group'])
-        && $variables['element']['#third_party_settings']['bt_list_group']['settings']['list_group']){
-    if(count($variables['items'])){
-      if(gettype($variables['attributes'])!='object'){
-        $variables['attributes'] =  new \Drupal\Core\Template\Attribute();
-      }
-      $variables['attributes']->addClass('list-group');
-      if($variables['element']['#third_party_settings']['bt_list_group']['settings']['display_as_a_card']){
-        $variables['attributes']->addClass('card');
-        $variables['label_class'] = 'card-header';
-        if($variables['element']['#third_party_settings']['bt_list_group']['settings']['use_label_as_card_header']){
-          $variables['label_display'] = 'above';
-          $variables['label_hidden'] = FALSE;
-        }
-      }
-      if($variables['items'][0]['content']['#type']=='link'){
-        foreach($variables['items'] as $delta=>$item){
-          $variables['items'][$delta]['attributes']->addClass('list-group-item list-group-item-action');
-        }
-      }
-    }
-    $previousClasses = implode(' ',$variables['attributes']->getClass()->value());
-    $variables['attributes']->addClass($previousClasses);
-  }
-  
-}
+include_once __DIR__ .'/includes/bt_list_group_field_formatter_alter.inc' ;
+include_once __DIR__ .'/includes/bt_list_group_panel_view_plugin.inc' ;
 
 
 
-/*
- * 
- * =====================================================================
- * =======================   views style plugin   ======================
- * =====================================================================
- * 
- * /*
+function template_preprocess_views_style_bt_list_group_list(&$variables){
 
+  $utilityService = \Drupal::service('bootstrap_toolbox.utility_service');
 
-/**
- * Prepares variables for views-style-bootstrap-toolbox-list-group-list-group-with-panels.html.twig template.
- */
-function template_preprocess_views_style_bt_list_group_panels(array &$variables): void {
   $view = $variables['view'];
   $options = $view->style_plugin->options;
+  $options['card_style'] = $utilityService->getStyleById($options['card_style']);
+  $options['header_style'] = $utilityService->getStyleById($options['header_style']);
+  $options['body_style'] = $utilityService->getStyleById($options['body_style']);
 
+
+  
+  $variables['options'] = $options;
+  $currentDisplay = $view->current_display;
+  
+  $displayTitle = $view->getTitle();
+  if(empty($displayTitle)){
+    $currentDisplay = $view->current_display;
+    $displayTitle = $view->storage->getDisplay($currentDisplay)['display_title'];
+  }
+  $variables['title'] = $displayTitle;
+  
+  
   $variables['default_row_class'] = $options['default_row_class'];
   foreach ($variables['rows'] as $id => $row) {
     $variables['rows'][$id] = [
       'content' => $row,
-      'attributes' => new Attribute(),
+      'attributes' => (new \Drupal\Core\Template\Attribute())->addClass(''),
     ];
     if ($row_class = $view->style_plugin->getRowClass($id)) {
       $variables['rows'][$id]['attributes']->addClass($row_class);
     }
   }
-}
-
-
-/**
- * Implements hook_preprocess_HOOK() for views style templates.
- */
-function bt_list_group_preprocess_views_style_bt_list_group_panels(&$variables) {
-  $view = $variables['view'];
-  $style_plugin = $view->style_plugin;
-
-  // Comprueba que el estilo del plugin es bt_list_group_panels.
-  if ($style_plugin->getPluginId() == 'bt_list_group_panels') {
-    
-    // Recupera los settings del estilo.
-    $style_options = $style_plugin->options;
-
-    // Recupera los valores de los campos desde los settings.
-    $item_list_field = $style_options['item_list'] ?? '';
-    $selected_panel_field = $style_options['selected_panel'] ?? '';
-
-    // Inicializa el array para almacenar las filas.
-    $bootstrap_list_group_with_panels_rows = [];
-
-    // Recorre todas las filas de la vista.
-    foreach ($view->result as $row_index => $row) {
-      // Obtiene el valor sin formatear (crudo) del campo item_list.
-      $item_list_value = $row->_entity->get($item_list_field)->value;
-      
-      //~ Poner un if aquí se trataría de poder formatear también el título del enlace para poder poner imágenes
-      //~ $item_list_value = $view->style_plugin->getField($row_index, $item_list_value);
-      
-      
-      // Obtiene el valor formateado del campo selected_panel.
-      $selected_panel_value = $view->style_plugin->getField($row_index, $selected_panel_field);
-
-      // Guarda los valores en el array.
-      $bootstrap_list_group_with_panels_rows[] = [
-        'item_list' => $item_list_value,
-        'selected_panel' => $selected_panel_value,
-      ];
-    }
-
-    // Guarda el array en las variables para usarlo en la plantilla.
-    $variables['bootstrap_list_group_with_panels_rows'] = $bootstrap_list_group_with_panels_rows;
-  }
-}
-
-
-/*
- * 
- * =====================================================================
- * =====================   views display extender   ====================
- * =====================================================================
- * 
- * /*
-
-/**
- * Implements hook_views_pre_render().
- */
-function bt_list_group_views_pre_render(\Drupal\views\ViewExecutable $view) {
   
-  $displayExtenders = $view->storage->getDisplay($view->current_display)['display_options']['display_extenders'];
-  if(array_key_exists('bt_list_group',$displayExtenders) &&
-    $displayExtenders['bt_list_group']['active']
-  ){
-    $view->element['#attributes']['class'][] = 'list-group';
-  }
   
 }

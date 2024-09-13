@@ -1,0 +1,37 @@
+/*   List Group  CSS para cuando en el panel hay imágenes  */
+.bt-list-group-panel .list-group-item-action {
+  padding: 2px!important;
+}
+
+.bt-list-group-panel .list-group-item-action img {
+  margin:0px!important;
+}
+
+
+
+
+.bt-list-group-panel.horizontal .list-group {
+  flex-direction: row!important;
+}
+
+
+.bt-list-group-panel.horizontal  .list-group-item-action {
+  padding: 0px!important;
+  border: 0px!important;
+  background-color: transparent!important;
+}
+
+.bt-list-group-panel.horizontal  .list-group-item-action  .active{
+  padding: 0px!important;
+  border: 0px!important;
+  background-color: transparent!important;
+}
+
+
+.bt-list-group-panel.horizontal .field--type-image img {
+  margin: 0px!important;
+}
+
+.bt-list-group-panel img {
+  margin: 0px!important;
+}

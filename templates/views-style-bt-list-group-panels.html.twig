@@ -13,24 +13,20 @@
  * @see template_preprocess_views_style_bt_list_group_panels()
  */
 #}
-<div class="row">
-  <div class="col-4">
-    <div class="list-group" id="list-tab" role="tablist">
-      
-      {% for row in bootstrap_list_group_with_panels_rows %}
-        <a class="list-group-item list-group-item-action {% if loop.first %} active {% endif %}" id="list-{{ loop.index }}" data-bs-toggle="list" href="#panel-{{ loop.index }}" role="tab" aria-controls="list-home">{{ row.item_list }}</a>
-      {% endfor %}
-      
-    </div>
-  </div>
+{% import '@bt_list_group/templates/macros/_macros.html.twig' as macros %}
 
-  <div class="col-8">
-    <div class="tab-content" id="nav-tabContent">
-      
-      {% for row in bootstrap_list_group_with_panels_rows %}
-        <div class="tab-pane fade{% if loop.first %} show active {% endif %}" id="panel-{{ loop.index }}" role="tabpanel" aria-labelledby="list-profile-list">{{ row.selected_panel }}</div>
-      {% endfor %}
+<div class="bt-list-group-panel {{ direction }}">
+  <div class="row">
 
-    </div>
+    {% if list_position == 'left' or list_position == 'top' %}
+      {{ macros.render_list(rows, list_cols) }}
+      {{ macros.render_panel(rows, panel_cols) }}
+    {% else %}
+      {{ macros.render_panel(rows, panel_cols) }}
+      {{ macros.render_list(rows, list_cols) }}
+    {% endif %}    
+
+
+      
   </div>
 </div>

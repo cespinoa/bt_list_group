@@ -12,7 +12,7 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
  *
  * @ViewsStyle(
  *   id = "bt_list_group_panels",
- *   title = @Translation("List Group with Panels Nuevo"),
+ *   title = @Translation("Panel List Group"),
  *   help = @Translation("@todo Add help text here."),
  *   theme = "views_style_bt_list_group_panels",
  *   display_types = {"normal"},
@@ -36,15 +36,15 @@ final class BTListGroupPanel extends StylePluginBase {
   protected function defineOptions(): array {
     $options = parent::defineOptions();
     $options['wrapper_class'] = ['default' => 'item-list'];
-    $options['view_fields'] = ['default' => ''];
+    $options['view_fields'] = ['default' => 'list-group-item list-group-item-action'];
     return $options;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildOptionsForm(&$form, FormStateInterface $formstate): void {
-    parent::buildOptionsForm($form, $formstate);
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
+    parent::buildOptionsForm($form, $form_state);
     
     //~ $this->usesFields();
     
@@ -54,7 +54,7 @@ final class BTListGroupPanel extends StylePluginBase {
     $fieldDefinitions = $this->view->display_handler->handlers['field'];
     if (!empty($fieldDefinitions)) {
       foreach ($fieldDefinitions as $fieldname => $fieldDefinition) {
-        
+
         $title = $fieldDefinition->configuration['title'];
         if(is_object($title)){
           $title = $title->__toString();
@@ -63,7 +63,13 @@ final class BTListGroupPanel extends StylePluginBase {
         
       }
     }
-    
+
+    $positions = [
+      'left' => $this->t('Left'),
+      'right' => $this->t('Right'),
+      'top' => $this->t('Top'),
+      'bottom' => $this->t('Bottom'),
+    ];
 
     $form['item_list'] = [
       '#type' => 'select',
@@ -80,6 +86,16 @@ final class BTListGroupPanel extends StylePluginBase {
       '#default_value' => $this->options['selected_panel'],
       '#description' => $this->t('Select a field from the view.'),
     ];
+
+    $form['list_position'] = [
+      '#type' => 'select',
+      '#title' => $this->t('List position'),
+      '#options' => $positions,
+      '#default_value' => $this->options['list_position'],
+      '#description' => $this->t('Select the list position.'),
+    ];
+
+    
     
     
     

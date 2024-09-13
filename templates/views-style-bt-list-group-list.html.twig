@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a view template to display a list of rows.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the container.
+ * - rows: A list of rows.
+ *   - attributes: The row's HTML attributes.
+ *   - content: The row's contents.
+ * - title: The title of this group of rows. May be empty.
+ *
+ * @see template_preprocess_views_style_bt_list_group_list()
+ */
+#}
+
+
+{%
+  set classes = [
+    'bt-list-group-list'
+  ]
+%}
+<div {{ attributes.addClass(classes) }} >
+  {% if options.display_as_card %}
+    <div class="card {{ options.card_style }}">
+
+    {% if options.display_title_as_header %}
+      <div class="card-header {{ options.header_style }}">{{ title }}</div>
+    {% endif %}
+
+  {% endif %}
+
+  <div class="row list-group  {{ options.card_style }}")>
+        {% for row in rows %}
+          {{ row.content }}
+        {% endfor %}
+  </div>
+          
+
+  {% if options.display_as_card %}
+    </div>
+  {% endif %}
+</div>
