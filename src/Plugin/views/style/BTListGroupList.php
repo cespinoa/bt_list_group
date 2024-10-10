@@ -65,7 +65,7 @@ final class BTListGroupList extends StylePluginBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('bootstrap_toolbox.utility_service') // Aquí inyectas el servicio
+      $container->get('bootstrap_toolbox.utility_service') 
     );
   }
 
@@ -184,21 +184,20 @@ final class BTListGroupList extends StylePluginBase {
   public function checkUrl($url){
     $active = '';
     $currentEntityUrl = NULL;
-    $routeMatch = \Drupal::routeMatch();
-    $routeMatch = \Drupal::service('current_route_match');
+    /** @var \Drupal\Core\Routing\RouteMatchInterface $routeMatch */
+    $routeMatch = $this->utilityService->getRouteMatch();
     $route = $routeMatch->getRouteName();
-
-    $routeElements = explode('.',$route);
-    if($routeElements[0] == 'entity' && $routeElements[2] == 'canonical'){
-      $currentEntity = $routeMatch->getParameter($routeElements[1]);
-      $currentEntityToLink = $currentEntity->toLink();
-      $currentEntityUrl = $currentEntityToLink->getUrl()->toString();
+    if ($route){
+      $routeElements = explode('.',$route);
+      if($routeElements[0] == 'entity' && $routeElements[2] == 'canonical'){
+        $currentEntity = $routeMatch->getParameter($routeElements[1]);
+        $currentEntityToLink = $currentEntity->toLink();
+        $currentEntityUrl = $currentEntityToLink->getUrl()->toString();
+      }
+      if( $url == $currentEntityUrl){
+        $active = 'active';
+      }      
     }
-
-    if( $url == $currentEntityUrl){
-      $active = 'active';
-    }
-
     return $active;
   }
 

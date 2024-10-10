@@ -142,7 +142,7 @@ function bt_list_group_field_formatter_settings_summary_alter(&$summary, $contex
  * Implements hook_preprocess_HOOK() for field templates.
  */
 function bt_list_group_preprocess_field(&$variables){
-  
+  /** @var \Drupal\Core\Template\Attribute $variables['attributes'] */
   if(array_key_exists('#third_party_settings', $variables['element'])
         && array_key_exists('bt_list_group',$variables['element']['#third_party_settings'])
         && array_key_exists('settings',$variables['element']['#third_party_settings']['bt_list_group'])

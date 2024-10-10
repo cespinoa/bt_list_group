@@ -11,7 +11,7 @@ namespace Drupal\bt_list_group\Service;
 class InitialSettingsService {
 
   /**
-   * @var array of field formatter plugin ids
+   * @var string[] Array of field formatter plugin ids
    */
   protected $formatters = ['entity_reference_label'];
 
@@ -29,7 +29,5 @@ class InitialSettingsService {
   public function getFormatters() {
     return $this->formatters;
   }
-
-  
 
 }

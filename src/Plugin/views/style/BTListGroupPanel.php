@@ -33,34 +33,25 @@ final class BTListGroupPanel extends StylePluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function defineOptions(): array {
-    $options = parent::defineOptions();
-    $options['wrapper_class'] = ['default' => 'item-list'];
-    $options['view_fields'] = ['default' => 'list-group-item list-group-item-action'];
-    return $options;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::buildOptionsForm($form, $form_state);
-    
-    //~ $this->usesFields();
-    
-    
-    
     $fields = [];
+    
+    // Verificar si $fieldDefinitions es un objeto iterable.
     $fieldDefinitions = $this->view->display_handler->handlers['field'];
-    if (!empty($fieldDefinitions)) {
+    if ($fieldDefinitions instanceof \Traversable) {
       foreach ($fieldDefinitions as $fieldname => $fieldDefinition) {
-
         $title = $fieldDefinition->configuration['title'];
-        if(is_object($title)){
-          $title = $title->__toString();
+        
+        if (is_object($title)) {
+          if (method_exists($title, '__toString')) {
+            $title = $title->__toString();
+          }
+          else {
+            $title = '[Object without __toString]';
+          }
         }
         $fields[$fieldname] = $title;
-        
       }
     }
 
@@ -78,7 +69,7 @@ final class BTListGroupPanel extends StylePluginBase {
       '#default_value' => $this->options['item_list'],
       '#description' => $this->t('Select a field from the view.'),
     ];
-    
+
     $form['selected_panel'] = [
       '#type' => 'select',
       '#title' => $this->t('Select the panel'),
@@ -94,11 +85,7 @@ final class BTListGroupPanel extends StylePluginBase {
       '#default_value' => $this->options['list_position'],
       '#description' => $this->t('Select the list position.'),
     ];
-
-    
-    
-    
-    
   }
+
 
 }

@@ -45,11 +45,14 @@ function bt_list_group_preprocess_views_style_bt_list_group_panels(&$variables) 
 
   // Inicializa el array para almacenar las filas.
   $rows = [];
-
+  $listCols = 'col-2';
+  $panelCols = 'col-10';
   
   foreach ($view->result as $row_index => $row) {
     $field = $row->_entity->get($itemListField);
     $itemListType = $field->getFieldDefinition()->getType();
+    $itemListValue = NULL;
+    
     
     if($itemListType == 'string'){
       
